@@ -3,6 +3,7 @@
 #include <Array.au3>
 #include <AutoItConstants.au3>
 #include <helper_functions.au3>
+#include <ArrayMultiDim.au3>
 
 Global $SAVE_DIR = @ScriptDir&"/save.ini"
 Global $TAX_DATE = "2016/07/01"
@@ -10,7 +11,8 @@ Global $TRANSACTION_COST = 10
 Global $CTR = 0.3 ; corporate tax rate
 Global $DISCOUNT_RATE = 0.02
 Global $wealth, $totalFrankingCredits, $currentMoney, $pendingDivPayments[1][3] = [['Code','Pay Date','Payment amount']], $divPaymentHistory[1][3] = [['Code','Date','Payment amount']], $holdings[1][2] = [['Code','Number of Stocks']]
-_initValuesForTesting()
+;Global $totalFrankingCredits ,$currentMoney ,$pendingDivPayments,$divPaymentHistory,$holdings
+; _initValuesForTesting()
 
 Func _initValuesForTesting()
 	$wealth = 1000
@@ -86,11 +88,11 @@ Func _LoadSave()
 			Case "$totalFrankingCredits"
 				$totalFrankingCredits = $data
 			Case "$pendingDivPayments"
-				$pendingDivPayments = $data
+				$pendingDivPayments = _ArrayDeclareFromString($data)
 			Case "$divPaymentHistory"
-				$divPaymentHistory = $data
+				$divPaymentHistory = _ArrayDeclareFromString($data)
 			Case "$holdings"
-				$holdings = $data
+				$holdings = _ArrayDeclareFromString($data)
 			Case "$currentMoney"
 				$currentMoney = $data
 		EndSwitch
@@ -98,28 +100,17 @@ Func _LoadSave()
 EndFunc
 
 Func _Save()
-	$data = "$totalFrankingCredits="&$totalFrankingCredits&@LF&"$currentMoney="&$currentMoney&@LF&"$pendingDivPayments="&_ArrayToString($pendingDivPayments)&@LF&"$divPaymentHistory="&$divPaymentHistory&@LF&"$holdings="&_ArrayToString($holdings)
+	$sPendingDivs = _ArrayToDeclarationString($pendingDivPayments)
+	$lenToTrim1 = StringLen($sPendingDivs)
+	; MsgBox(0,'',$sPendingDivs)
+	$sDivHistory = _ArrayToDeclarationString($divPaymentHistory)
+	$lenToTrim2 = StringLen($sDivHistory)
+	$sDivHistory = StringTrimLeft($sDivHistory,$lenToTrim1)
+	; MsgBox(0,'',$sDivHistory)
+	$sHoldings = StringTrimLeft(_ArrayToDeclarationString($holdings),$lenToTrim2)
+	; MsgBox(0,'',$sHoldings)
+	$data = "$totalFrankingCredits="&$totalFrankingCredits&@LF&"$currentMoney="&$currentMoney&@LF&"$pendingDivPayments="&$sPendingDivs&@LF&"$divPaymentHistory="&$sDivHistory&@LF&"$holdings="&$sHoldings
 	_FileCreate($SAVE_DIR)
 	IniWriteSection($SAVE_DIR, "General", $data)
 
 EndFunc
-_Save()
-;~ $f = FileOpen(@ScriptDir&"/test.txt", 2)
-;~ _FileWriteFromArray($f,$pendingDivPayments)
-;~ Local $array
-;~ _FileReadToArray(@ScriptDir&'/test.txt',$array)
-;~ $array = _ArrayToString($pendingDivPayments,'|')
-;$array = StringSplit($array,'|')
-;~ ; _ArrayDisplay($array)
-
-;~ MsgBox(0,'',$array)
-;~ $array = StringSplit($array,@CRLF,2)
-;~ _ArrayDisplay($array)
-;~ $array = _ArrayToString($array)
-;~ MsgBox(0,'',$array)
-;~ $array = StringSplit($array,@CRLF,2)
-
-;~ _ArrayDisplay($array)
-
-
-
