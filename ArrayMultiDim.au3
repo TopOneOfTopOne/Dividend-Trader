@@ -2,7 +2,6 @@
 
 #include <Array.au3>
 
-
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _ArrayAssign
 ; Description ...: Assigns an array variable by name with the data.
@@ -63,7 +62,7 @@ EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _ArrayCompare
-; Description ...: Checks if two array are identical.
+; Description ...: Checks if two arrays are identical.
 ; Syntax ........: _ArrayCompare($aArray1, $aArray2[, $iFlag = 0])
 ; Parameters ....: $aArray1   - First array.
 ;                  $aArray2   - Second array.
@@ -74,11 +73,11 @@ EndFunc
 ;                                0 if the two arrays are differents. Sets @extended to non-zero value. See remarks.
 ;                  Failure    - -1 : Unable to compare the arrays.
 ; Author ........: jguinch
-; Remarks .......: If the two array are differents, @extended is set to :
-;                     1 : Different size.
-;                     2 : Different of data.
+; Remarks .......: If the two arrays are differents, @extended is set to :
+;                     1 : Difference of size.
+;                     2 : Difference of data.
 ;                  On failure, @error is set to :
-;                     1 : One of the two variable is not an array.
+;                     1 : One of the two variables is not an array.
 ;                     2 : Unable ro read one of the two array.
 ; ===============================================================================================================================
 Func _ArrayCompare($aArray1, $aArray2, $iFlag = 0)
@@ -108,7 +107,7 @@ EndFunc
 ; Name ..........: _ArrayDeclare
 ; Description ...: Creates an empty array with the specified size.
 ; Syntax ........: _ArrayDeclare($vStruct)
-; Parameters ....: $vStruct   - Structure of the he array to create. See remarks
+; Parameters ....: $vStruct   - Structure of the array to create. See remarks
 ; Return values .: Success    - An empty array with the specified size.
 ;                  Failure    - 0 and set @error to 1.
 ; Author ........: jguinch
@@ -421,12 +420,14 @@ EndFunc ; ===> __ArrayFromStringProc
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
 Func __ArrayToStringProc($a, $iDim = 1, $sStruct = "")
 	Local Static $sRet
+	If $iDim = 1 Then $sRet = ""
 	$iUBound = UBound($a, $iDim)
 	If $iDim = 1 Then $sRet &= "["
 	For $i = 0 To $iUBound - 1
 		If $iDim = UBound($a, 0) Then
 			$sVal = Execute("$a" & $sStruct & "[" & $i & "]")
 			If IsString($sVal) Then $sVal = '"' & StringReplace($sVal, '"', '""') & '"'
+			IF $sVal = Null Then $sVal = "Null"
 			$sRet &= $sVal
 			If $i < $iUBound - 1 Then $sRet &= ","
 		Else
