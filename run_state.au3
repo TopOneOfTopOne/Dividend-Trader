@@ -8,8 +8,8 @@
 #include <main_functions.au3>
 #include <GuiComboBox.au3>
 
-#Region ### START Koda GUI section ### Form=c:\users\p\desktop\dividend trade logger\tradergui.kxf
-$traderGUI = GUICreate("Dividend Trader by noobling", 324, 338, -1, -1)
+
+$traderGUI = GUICreate("Dividend Trader by noobling", 382, 408, -1, -1)
 GUISetIcon("C:\Users\P\AppData\Roaming\uTorrent\uTorrent.exe", -1)
 $aboutBo = GUICtrlCreateTab(8, 0, 633, 561)
 $TabSheet1 = GUICtrlCreateTabItem("Snapshot")
@@ -29,19 +29,21 @@ $refreshBtn = GUICtrlCreateButton("Refresh", 120, 48, 75, 25)
 $transactionHistoryBtn = GUICtrlCreateButton("Transaction History", 40, 216, 115, 25)
 GUICtrlCreateGroup("", -99, -99, 1, 1)
 $TabSheet2 = GUICtrlCreateTabItem("Buy")
-$codeInput = GUICtrlCreateInput("", 40, 64, 89, 21)
-$buyPriceInput = GUICtrlCreateInput("", 184, 64, 89, 21)
-$divDateInput = GUICtrlCreateInput("", 40, 224, 89, 21)
-$dividendInput = GUICtrlCreateInput("", 184, 144, 89, 21)
-$numSharesInput = GUICtrlCreateInput("", 40, 144, 89, 21)
-$frankingInput = GUICtrlCreateInput("", 184, 224, 89, 21)
+GUICtrlSetState(-1,$GUI_SHOW)
+$codeInput = GUICtrlCreateInput("", 32, 64, 89, 21)
+$buyPriceInput = GUICtrlCreateInput("", 224, 64, 89, 21)
+$divDateInput = GUICtrlCreateInput("", 32, 224, 89, 21)
+$dividendInput = GUICtrlCreateInput("", 224, 144, 89, 21)
+$numSharesInput = GUICtrlCreateInput("", 32, 144, 89, 21)
+$frankingInput = GUICtrlCreateInput("", 224, 224, 89, 21)
 $buyBtn = GUICtrlCreateButton("Buy", 120, 272, 75, 25)
-$codeLabel = GUICtrlCreateLabel("Code", 40, 40, 29, 17)
-$buyPriceLabel = GUICtrlCreateLabel("Buy Price ($)", 184, 40, 64, 17)
-$numSharesLabel = GUICtrlCreateLabel("Number of Shares", 40, 120, 89, 17)
-$dividendLabel = GUICtrlCreateLabel("Dividend (CPS)", 184, 120, 76, 17)
-$divDateLabel = GUICtrlCreateLabel("Dividend Pay Date", 40, 200, 93, 17)
-$frankingLabel = GUICtrlCreateLabel("Franking (%)", 184, 200, 62, 17)
+$codeLabel = GUICtrlCreateLabel("Code", 32, 40, 29, 17)
+$buyPriceLabel = GUICtrlCreateLabel("Buy Price ($)", 224, 40, 64, 17)
+$numSharesLabel = GUICtrlCreateLabel("Number of Shares", 32, 120, 89, 17)
+$dividendLabel = GUICtrlCreateLabel("Dividend (CPS)", 224, 120, 76, 17)
+$divDateLabel = GUICtrlCreateLabel("Dividend Pay Date", 32, 200, 93, 17)
+$frankingLabel = GUICtrlCreateLabel("Franking (%)", 224, 200, 62, 17)
+$useFullCapitalBtn = GUICtrlCreateButton("Use Full Capital", 128, 144, 83, 25)
 $TabSheet3 = GUICtrlCreateTabItem("Sell")
 $sellPriceInput = GUICtrlCreateInput("", 93, 178, 129, 21)
 $sellPriceLabel = GUICtrlCreateLabel("Sell Price", 136, 144, 48, 17)
@@ -54,7 +56,6 @@ GUICtrlSetTip($currentMoneyLabel,'How much money you have to spend on shit')
 GUICtrlCreateTabItem("")
 GUISetState(@SW_SHOW)
 #EndRegion ### END Koda GUI section ###
-
 
 
 Func _loadData()
@@ -98,6 +99,9 @@ While 1
 
 		Case $dividendHistoryBtn
 			_ArrayDisplay($divPaymentHistory, "Dividend Payment History")
+		Case $useFullCapitalBtn
+			$numShares = Round(($currentMoney - $TRANSACTION_COST)/GUICtrlRead($buyPriceInput),0)
+			GUICtrlSetData($numSharesInput, $numShares)
 		Case $buyBtn
 			Local $code = GUICtrlRead($codeInput)
 			Local $divDate = GUICtrlRead($divDateInput)
