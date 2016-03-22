@@ -12,7 +12,7 @@ Global $CTR = 0.3 ; corporate tax rate
 Global $DISCOUNT_RATE = 0.02
 Global $DATE_NOW = @YEAR&'/'&@MON&'/'&@MDAY
 Global $wealth, $totalFrankingCredits, $currentMoney, $pendingDivPayments[1][3] = [['Code','Pay Date','Payment amount']], $divPaymentHistory[1][3] = [['Code','Date','Payment amount']], $holdings[1][2] = [['Code','Number of Stocks']], $history[1][3] = [['Date','Type','Details']]
-;Global $totalFrankingCredits ,$currentMoney ,$pendingDivPayments,$divPaymentHistory,$holdings
+
 ; _initValuesForTesting()
 
 Func _initValuesForTesting()
@@ -30,8 +30,17 @@ Func _addToHistory($type,$details)
 	_ArrayAdd($history,$toAdd)
 EndFunc
 
+Func _addDivToPending($dividendAmount, $payDate, $code)
+	Local $aDiv[1][3] = [[$code, $payDate, $dividendAmount]]
+	_ArrayAdd($pendingDivPayments, $aDiv)
+EndFunc
+
+
+; bug when I try to sell a share but it is only one
+; hard to fix, because I tried before
+; sometimes this bug does not appeara and sometimes it does...
 Func _sellStock($code, $sellPrice)
-	_ArrayDisplay($holdings)
+	; _ArrayDisplay($holdings)
 	Local $stock_index = _ArraySearch($holdings, $code)
 	If 0 Then
 		MsgBox(0,'Error','No such code')
@@ -41,12 +50,10 @@ Func _sellStock($code, $sellPrice)
 		_ArrayDelete($holdings,$stock_index) ; remove from holdings since sold
 		$currentMoney = $currentMoney + $money - $TRANSACTION_COST
 		_addToHistory('Sell','Code: '&$code&' Price($): '&$sellPrice)
-;~ 		$aInfo[4] = [$code,"Number of shares "&$numStocks,"Money earned "&$money,"Current money "&$currentMoney]
-;~ 		_writeToLog($aInfo)
 	EndIf
 EndFunc
 
-; updates appropriate variables
+
 Func _buyStock($code, $divPayDate, $numStocks, $buyPrice, $franking, $dividend)
 	Local $aholdings[1][2] = [[$code,$numStocks]]
 	_ArrayAdd($holdings, $aholdings)
@@ -59,7 +66,7 @@ Func _buyStock($code, $divPayDate, $numStocks, $buyPrice, $franking, $dividend)
 	Local $frankingCredits = _calcFrankingCredits($dividend, $franking, $numStocks, $CTR)
 	$totalFrankingCredits += $frankingCredits
     _addToHistory('Buy','Code: '&$code&' Num Shares: '&$numStocks&' Price($): '&$buyPrice&' Franking(%): '&$franking&' Dividend(CPS): '&$dividend)
-	;_writeToLog($aInfo)
+
 EndFunc
 
 
@@ -76,12 +83,6 @@ Func _checkPendingDivsToday() ; checks if dividends are due to be paid today if 
 			MsgBox(0,'You received',$code&': $'&$amount&' dividend today')
 		EndIf
 	Next
-EndFunc
-
-
-Func _addDivToPending($dividendAmount, $payDate, $code)
-	Local $aDiv[1][3] = [[$code, $payDate, $dividendAmount]]
-	_ArrayAdd($pendingDivPayments, $aDiv)
 EndFunc
 
 Func _LoadSave()
